@@ -1,6 +1,7 @@
 # { "Depends": "py-genlayer:test" }
 
 import json
+import typing
 from datetime import datetime
 from urllib.parse import urlparse
 
@@ -19,7 +20,7 @@ class SourceGuardClaimAttestor(gl.Contract):
     latest_report: str
     max_sources: u256
 
-    def __init__(self, allowed_domains: list[str], max_sources: int = 3):
+    def __init__(self, allowed_domains: list[str], max_sources: int):
         if not allowed_domains:
             raise ValueError("At least one allowed source domain is required.")
         if max_sources < 1 or max_sources > 5:
@@ -38,7 +39,7 @@ class SourceGuardClaimAttestor(gl.Contract):
         self.latest_report = ""
 
     @gl.public.write
-    def attest(self, claim: str, source_urls: list[str]) -> dict:
+    def attest(self, claim: str, source_urls: list[str]) -> dict[str, typing.Any]:
         claim = claim.strip()
         if not claim:
             raise ValueError("Claim is required.")
@@ -172,13 +173,13 @@ Rules:
         return len(self.reports)
 
     @gl.public.view
-    def get_latest_report(self) -> dict:
+    def get_latest_report(self) -> dict[str, typing.Any]:
         if not self.latest_report:
             return {}
         return json.loads(self.latest_report)
 
     @gl.public.view
-    def get_report(self, report_id: int) -> dict:
+    def get_report(self, report_id: int) -> dict[str, typing.Any]:
         if report_id < 1 or report_id > len(self.reports):
             raise ValueError("Report not found.")
         return json.loads(self.reports[report_id - 1])
