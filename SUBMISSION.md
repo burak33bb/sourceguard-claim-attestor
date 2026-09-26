@@ -6,7 +6,7 @@ Intelligent Contracts
 
 ## Summary
 
-SourceGuard Claim Attestor is a reusable GenLayer Intelligent Contract for source-backed claim verification. It lets a user submit a factual claim and a bounded set of allowed source URLs. Validators fetch each source, evaluate whether the source supports or contradicts the claim, then aggregate those evaluations into a canonical on-chain attestation report.
+SourceGuard Claim Attestor is a reusable GenLayer Intelligent Contract for source-backed claim verification. It lets a user submit a factual claim and up to three allowed source URLs. Validators fetch each source, evaluate whether the source supports or contradicts the claim, then aggregate those evaluations into a canonical on-chain attestation report.
 
 ## Why It Matters
 

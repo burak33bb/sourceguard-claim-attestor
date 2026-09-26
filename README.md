@@ -34,7 +34,8 @@ Each report stores the submitter, original claim, source URLs, per-source valida
 Deploy with an allowlist:
 
 ```python
-allowed_domains = ["github.com", "docs.genlayer.com"]
+primary_domain = "github.com"
+secondary_domain = "docs.genlayer.com"
 max_sources = 3
 ```
 
@@ -42,7 +43,9 @@ Call `attest`:
 
 ```python
 claim = "The genlayer-py repository supports calldata encoding utilities."
-sources = ["https://github.com/genlayerlabs/genlayer-py"]
+source_url_one = "https://github.com/genlayerlabs/genlayer-py"
+source_url_two = ""
+source_url_three = ""
 ```
 
 Read the latest report:

@@ -2,6 +2,7 @@
 # { "Depends": "py-genlayer:1jb45aa8ynh2a9c9xn3b7qqh8sm5q93hwfp7jqmwsfhh8jpz09h6" }
 
 import json
+import typing
 from datetime import datetime
 from urllib.parse import urlparse
 
@@ -20,44 +21,48 @@ class SourceGuardClaimAttestor(gl.Contract):
     latest_report: str
     max_sources: u256
 
-    def __init__(self, allowed_domains: list[str], max_sources: int):
-        if not allowed_domains:
-            raise ValueError("At least one allowed source domain is required.")
+    def __init__(self, primary_domain: str, secondary_domain: str, max_sources: int):
         if max_sources < 1 or max_sources > 5:
             raise ValueError("max_sources must be between 1 and 5.")
 
         seen_domains = []
-        for domain in allowed_domains:
+        for domain in [primary_domain, secondary_domain]:
             normalized = _normalize_domain(domain)
-            if not normalized:
-                raise ValueError("Allowed domains must be valid.")
-            if normalized not in seen_domains:
+            if normalized and normalized not in seen_domains:
                 seen_domains.append(normalized)
                 self.allowed_domains.append(normalized)
+        if len(seen_domains) == 0:
+            raise ValueError("At least one allowed source domain is required.")
 
         self.max_sources = u256(max_sources)
         self.latest_report = ""
 
     @gl.public.write
-    def attest(self, claim: str, source_urls: list[str]) -> dict:
+    def attest(
+        self,
+        claim: str,
+        source_url_one: str,
+        source_url_two: str,
+        source_url_three: str,
+    ) -> typing.Any:
         claim = claim.strip()
         if not claim:
             raise ValueError("Claim is required.")
-        if len(source_urls) == 0:
-            raise ValueError("At least one source URL is required.")
-        if len(source_urls) > self.max_sources:
-            raise ValueError("Too many source URLs.")
 
         normalized_sources = []
-        for source_url in source_urls:
+        for source_url in [source_url_one, source_url_two, source_url_three]:
             normalized_url = source_url.strip()
             if not normalized_url:
-                raise ValueError("Source URL is required.")
+                continue
+            if len(normalized_sources) >= self.max_sources:
+                raise ValueError("Too many source URLs.")
             source_domain = _normalize_domain(normalized_url)
             if not _domain_allowed(source_domain, list(self.allowed_domains)):
                 raise ValueError("Source URL domain is not allowed.")
             if normalized_url not in normalized_sources:
                 normalized_sources.append(normalized_url)
+        if len(normalized_sources) == 0:
+            raise ValueError("At least one source URL is required.")
 
         source_evaluations = []
         for source_url in normalized_sources:
@@ -173,13 +178,13 @@ Rules:
         return len(self.reports)
 
     @gl.public.view
-    def get_latest_report(self) -> dict:
+    def get_latest_report(self) -> typing.Any:
         if not self.latest_report:
             return {}
         return json.loads(self.latest_report)
 
     @gl.public.view
-    def get_report(self, report_id: int) -> dict:
+    def get_report(self, report_id: int) -> typing.Any:
         if report_id < 1 or report_id > len(self.reports):
             raise ValueError("Report not found.")
         return json.loads(self.reports[report_id - 1])
