@@ -1,7 +1,7 @@
-# { "Depends": "py-genlayer:test" }
+# v0.2.16
+# { "Depends": "py-genlayer:1jb45aa8ynh2a9c9xn3b7qqh8sm5q93hwfp7jqmwsfhh8jpz09h6" }
 
 import json
-import typing
 from datetime import datetime
 from urllib.parse import urlparse
 
@@ -39,7 +39,7 @@ class SourceGuardClaimAttestor(gl.Contract):
         self.latest_report = ""
 
     @gl.public.write
-    def attest(self, claim: str, source_urls: list[str]) -> dict[str, typing.Any]:
+    def attest(self, claim: str, source_urls: list[str]) -> dict:
         claim = claim.strip()
         if not claim:
             raise ValueError("Claim is required.")
@@ -173,13 +173,13 @@ Rules:
         return len(self.reports)
 
     @gl.public.view
-    def get_latest_report(self) -> dict[str, typing.Any]:
+    def get_latest_report(self) -> dict:
         if not self.latest_report:
             return {}
         return json.loads(self.latest_report)
 
     @gl.public.view
-    def get_report(self, report_id: int) -> dict[str, typing.Any]:
+    def get_report(self, report_id: int) -> dict:
         if report_id < 1 or report_id > len(self.reports):
             raise ValueError("Report not found.")
         return json.loads(self.reports[report_id - 1])
